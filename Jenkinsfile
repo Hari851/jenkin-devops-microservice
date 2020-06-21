@@ -7,7 +7,7 @@ pipeline {
 		PATH = "$dockerHome/bin:$mavenHome/bin:$PATH"
 	}
 	  stages{
-		  stage('build'){
+		  stage('Checkout'){
 			  steps{
 				 //echo "mvn --version"
 				  //echo "node --version"
@@ -29,7 +29,25 @@ pipeline {
 			  echo "Integration Test"
 			   }
 		  }
+		  stage('build docker image'){
+			  steps{
+				  "docker build -t in28min/currency-exchange-devops:$env.BUILD_TAG"
+			  }
+			  }
+		  stage('push docker image'){
+			  steps{
+				  script{
+					  docker.withRegistry('','dockerhub'){
+					  docker.push();
+					  docker.push('latest');
+				  }
+				  } 
+			  }
+		  } 
+
 	  }
+
+
 
 	  post{
         always{
